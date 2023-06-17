@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSS Minifier</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    .code-container {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0;
+      overflow-x: auto;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .notification.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CSS Minifier</h1>
+    <div class="textarea-wrapper">
+      <textarea id="input" class="textarea" placeholder="Enter your CSS code..."></textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="minify()">Minify</button>
+      <button class="btn" onclick="reset()">Reset</button>
+      <button class="btn" onclick="download()" id="downloadBtn" disabled>Download</button>
+      <button class="btn" onclick="copyToClipboard()" id="copyBtn" disabled>Copy</button>
+    </div>
+
+    <div class="code-container">
+      <pre id="outputCode"></pre>
+    </div>
+  </div>
+
+  <div class="notification" id="copyNotification">Code copied to clipboard!</div>
+
+  <script>
+    function minify() {
+      const input = document.getElementById("input").value;
+      const output = minifyCSS(input);
+
+      document.getElementById("outputCode").textContent = output;
+      document.getElementById("downloadBtn").disabled = false;
+      document.getElementById("copyBtn").disabled = false;
+    }
+
+    function minifyCSS(css) {
+      return css.replace(/\s+/g, " ").replace(/(\s*:\s*)/g, "$1").replace(/(\s*\{\s*)/g, "{").replace(/(\s*\}\s*)/g, "}").replace(/(\s*;\s*)/g, ";").replace(/(\s*\/\*\s*)/g, "/*").replace(/(\s*\*\/\s*)/g, "*/");
+    }
+
+    function reset() {
+      document.getElementById("input").value = "";
+      document.getElementById("outputCode").textContent = "";
+      document.getElementById("downloadBtn").disabled = true;
+      document.getElementById("copyBtn").disabled = true;
+    }
+
+    function download() {
+      const output = document.getElementById("outputCode").textContent;
+      const blob = new Blob([output], { type: "text/css" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = "minified.css";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById("outputCode").textContent;
+      navigator.clipboard.writeText(output);
+
+      const notification = document.getElementById("copyNotification");
+      notification.classList.add("show");
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
